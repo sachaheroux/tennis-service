@@ -84,25 +84,30 @@ export default function Home() {
         </div>
 
         <div className="flex justify-center">
-          <div 
-            className="relative border-4 border-blue-500 rounded-xl overflow-hidden bg-[#90EE90] shadow-2xl"
-            style={{ width: COURT_WIDTH, height: COURT_HEIGHT }}
-            onClick={handleCourtClick}
-          >
-            {/* Rectangle de service */}
-            <div className="absolute w-full h-1/2 border-b-4 border-blue-500" />
-            <div className="absolute w-1/2 h-full border-r-4 border-blue-500" />
-            
-            {/* Point de la balle */}
-            {ballPos && (
-              <div 
-                className="absolute w-6 h-6 rounded-full bg-[#32CD32] border-2 border-green-600 shadow-lg transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-200"
-                style={{ 
-                  left: ballPos.x,
-                  top: ballPos.y,
-                }}
-              />
-            )}
+          <div className="relative p-4 bg-white rounded-2xl shadow-2xl">
+            <div 
+              className="relative border-[6px] border-blue-500 rounded-xl overflow-hidden bg-[#90EE90] shadow-lg"
+              style={{ width: COURT_WIDTH, height: COURT_HEIGHT }}
+              onClick={handleCourtClick}
+            >
+              {/* Rectangle de service avec bordure blanche */}
+              <div className="absolute inset-0 border-2 border-white/50"></div>
+              
+              {/* Lignes du carré de service */}
+              <div className="absolute w-full h-1/2 border-b-[6px] border-blue-500" />
+              <div className="absolute w-1/2 h-full border-r-[6px] border-blue-500" />
+              
+              {/* Point de la balle */}
+              {ballPos && (
+                <div 
+                  className="absolute w-6 h-6 rounded-full bg-[#32CD32] border-2 border-green-600 shadow-lg transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-200"
+                  style={{ 
+                    left: ballPos.x,
+                    top: ballPos.y,
+                  }}
+                />
+              )}
+            </div>
           </div>
         </div>
 
