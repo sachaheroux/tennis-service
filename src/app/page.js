@@ -53,29 +53,29 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-8 px-4">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Analyseur de Service Tennis</h1>
-          <p className="text-gray-600">Cliquez sur le carré de service pour placer votre balle</p>
+    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4">
+      <div className="max-w-5xl mx-auto space-y-10">
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">Analyseur de Service Tennis</h1>
+          <p className="text-lg text-gray-600">Cliquez dans le carré de service pour placer votre balle</p>
         </div>
         
-        <div className="flex justify-center gap-4 mb-8">
+        <div className="flex justify-center gap-6">
           <button 
-            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+            className={`px-10 py-4 text-lg rounded-xl font-semibold transition-all transform hover:scale-105 ${
               mode === 'egalite' 
-                ? 'bg-blue-600 text-white shadow-lg' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-400' 
+                : 'bg-white text-gray-700 shadow-md hover:bg-gray-50 ring-1 ring-gray-200'
             }`}
             onClick={() => setMode('egalite')}
           >
             Égalité
           </button>
           <button 
-            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+            className={`px-10 py-4 text-lg rounded-xl font-semibold transition-all transform hover:scale-105 ${
               mode === 'avantage' 
-                ? 'bg-blue-600 text-white shadow-lg' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-400' 
+                : 'bg-white text-gray-700 shadow-md hover:bg-gray-50 ring-1 ring-gray-200'
             }`}
             onClick={() => setMode('avantage')}
           >
@@ -85,18 +85,18 @@ export default function Home() {
 
         <div className="flex justify-center">
           <div 
-            className="relative border-4 border-blue-700 rounded-lg overflow-hidden bg-green-100 shadow-xl"
+            className="relative border-4 border-blue-500 rounded-xl overflow-hidden bg-[#90EE90] shadow-2xl"
             style={{ width: COURT_WIDTH, height: COURT_HEIGHT }}
             onClick={handleCourtClick}
           >
-            {/* Lignes du carré de service */}
-            <div className="absolute w-full h-1/2 border-b-2 border-white" />
-            <div className="absolute w-1/2 h-full border-r-2 border-white" />
+            {/* Rectangle de service */}
+            <div className="absolute w-full h-1/2 border-b-4 border-blue-500" />
+            <div className="absolute w-1/2 h-full border-r-4 border-blue-500" />
             
             {/* Point de la balle */}
             {ballPos && (
               <div 
-                className="absolute w-4 h-4 rounded-full bg-yellow-400 border-2 border-yellow-600 shadow-md transform -translate-x-1/2 -translate-y-1/2"
+                className="absolute w-6 h-6 rounded-full bg-[#32CD32] border-2 border-green-600 shadow-lg transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-200"
                 style={{ 
                   left: ballPos.x,
                   top: ballPos.y,
@@ -106,11 +106,11 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-lg max-w-md mx-auto space-y-6">
+        <div className="bg-white rounded-2xl p-8 shadow-xl max-w-2xl mx-auto space-y-8 ring-1 ring-gray-100">
           <div>
-            <div className="flex justify-between mb-2">
-              <label className="font-medium text-gray-700">Vitesse: {speed} km/h</label>
-              <span className="text-gray-500 text-sm">{Math.round(speedScore)} points</span>
+            <div className="flex justify-between mb-3">
+              <label className="text-lg font-semibold text-gray-700">Vitesse: {speed} km/h</label>
+              <span className="text-lg font-medium text-blue-600">{Math.round(speedScore)} points</span>
             </div>
             <input
               type="range"
@@ -118,14 +118,14 @@ export default function Home() {
               max="220"
               value={speed}
               onChange={(e) => setSpeed(Number(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
             />
           </div>
 
           <div>
-            <div className="flex justify-between mb-2">
-              <label className="font-medium text-gray-700">Effet: {spin}</label>
-              <span className="text-gray-500 text-sm">x{spinBonus.toFixed(2)}</span>
+            <div className="flex justify-between mb-3">
+              <label className="text-lg font-semibold text-gray-700">Effet: {spin}</label>
+              <span className="text-lg font-medium text-blue-600">x{spinBonus.toFixed(2)}</span>
             </div>
             <input
               type="range"
@@ -133,12 +133,12 @@ export default function Home() {
               max="10"
               value={spin}
               onChange={(e) => setSpin(Number(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
             />
           </div>
 
-          <div className="flex items-center justify-between py-2">
-            <span className="font-medium text-gray-700">Type de balle</span>
+          <div className="flex items-center justify-between py-3">
+            <span className="text-lg font-semibold text-gray-700">Type de balle</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -146,15 +146,15 @@ export default function Home() {
                 onChange={(e) => setIsFirstServe(!e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-24 h-8 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600 flex items-center justify-between px-2 text-xs font-medium">
+              <div className="w-32 h-10 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-8 after:w-8 after:transition-all peer-checked:bg-blue-600 flex items-center justify-between px-3 text-sm font-semibold">
                 <span className={`${!isFirstServe ? 'text-white' : 'text-gray-700'}`}>2ème</span>
                 <span className={`${isFirstServe ? 'text-gray-700' : 'text-white'}`}>1ère</span>
               </div>
             </label>
           </div>
 
-          <div className="flex items-center justify-between py-2">
-            <span className="font-medium text-gray-700">Faute</span>
+          <div className="flex items-center justify-between py-3">
+            <span className="text-lg font-semibold text-gray-700">Faute</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -162,17 +162,17 @@ export default function Home() {
                 onChange={(e) => setIsFault(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-14 h-8 bg-gray-200 rounded-full peer peer-checked:bg-red-600 after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white" />
+              <div className="w-20 h-10 bg-gray-200 rounded-full peer peer-checked:bg-red-500 after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-8 after:w-8 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white shadow-inner" />
             </label>
           </div>
         </div>
 
-        <div className="text-center">
-          <div className="text-4xl font-bold text-blue-600">
+        <div className="text-center space-y-3">
+          <div className="text-5xl font-bold text-blue-600">
             {finalScore} points
           </div>
           {ballPos && (
-            <div className="text-gray-600 mt-2">
+            <div className="text-xl text-gray-600">
               Précision: {Math.round(precision * 100)}%
             </div>
           )}
