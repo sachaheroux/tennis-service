@@ -1,103 +1,150 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+
+const COURT_WIDTH = 270;
+const COURT_HEIGHT = 420;
+
+function scorePrecision(x, y, mode) {
+  // x: 0-13.5, y: 0-21
+  let cibles = mode === 'egalite' ? [0, 6, 13.5] : [0, 8, 13.5];
+  let minDist = Math.min(...cibles.map(c => Math.abs(x - c)));
+  let score_x = 1 - 0.4 * (minDist / 6.75);
+
+  let facteur_y = 1;
+  if (Math.abs(x - 0) < 1 || Math.abs(x - 13.5) < 1) {
+    facteur_y = 0.8 + 0.4 * (1 - y / 21);
+  } else if ((mode === 'egalite' && Math.abs(x - 6) < 1) || (mode === 'avantage' && Math.abs(x - 8) < 1)) {
+    facteur_y = 0.8 + 0.4 * (y / 21);
+  } else {
+    facteur_y = 0.8 + 0.4 * (y / 21);
+  }
+
+  return score_x * facteur_y;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [mode, setMode] = useState('egalite');
+  const [isFirstServe, setIsFirstServe] = useState(true);
+  const [isFault, setIsFault] = useState(false);
+  const [speed, setSpeed] = useState(160);
+  const [spin, setSpin] = useState(5);
+  const [ballPos, setBallPos] = useState(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const pxToCourt = (px, py) => ({
+    x: (px / COURT_WIDTH) * 13.5,
+    y: (py / COURT_HEIGHT) * 21,
+  });
+
+  let precision = 0;
+  if (ballPos) {
+    const { x, y } = pxToCourt(ballPos.x, ballPos.y);
+    precision = scorePrecision(x, y, mode);
+  }
+  const speedScore = speed / 2;
+  const spinBonus = 1 + 0.015 * (spin - 1);
+  const finalScore = ballPos && !isFault ? Math.round(precision * speedScore * spinBonus) : 0;
+
+  const handleCourtClick = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setBallPos({ x, y });
+  };
+
+  return (
+    <main className="flex min-h-screen flex-col items-center p-4 bg-gray-50">
+      <h1 className="text-2xl font-bold mb-4">Efficacité Service Tennis</h1>
+      
+      <div className="flex gap-2 mb-4">
+        <button 
+          className={`px-4 py-2 rounded ${mode === 'egalite' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          onClick={() => setMode('egalite')}
+        >
+          Égalité
+        </button>
+        <button 
+          className={`px-4 py-2 rounded ${mode === 'avantage' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          onClick={() => setMode('avantage')}
+        >
+          Avantage
+        </button>
+      </div>
+
+      <div 
+        className="relative border-2 border-teal-600 rounded-lg overflow-hidden bg-teal-50"
+        style={{ width: COURT_WIDTH, height: COURT_HEIGHT }}
+        onClick={handleCourtClick}
+      >
+        {ballPos && (
+          <div 
+            className="absolute w-5 h-5 rounded-full bg-orange-500 border-2 border-orange-700"
+            style={{ 
+              left: ballPos.x - 10,
+              top: ballPos.y - 10,
+            }}
+          />
+        )}
+      </div>
+
+      <div className="w-full max-w-md mt-4 space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Vitesse: {speed} km/h</label>
+          <input
+            type="range"
+            min="100"
+            max="220"
+            value={speed}
+            onChange={(e) => setSpeed(Number(e.target.value))}
+            className="w-full"
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        <div>
+          <label className="block text-sm font-medium mb-1">Spin: {spin}</label>
+          <input
+            type="range"
+            min="1"
+            max="10"
+            value={spin}
+            onChange={(e) => setSpin(Number(e.target.value))}
+            className="w-full"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span>1ère balle</span>
+          <div className="relative inline-flex items-center">
+            <input
+              type="checkbox"
+              checked={isFirstServe}
+              onChange={(e) => setIsFirstServe(e.target.checked)}
+              className="sr-only peer"
+              id="serve-toggle"
+            />
+            <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          </div>
+          <span>2ème balle</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span>Faute</span>
+          <div className="relative inline-flex items-center">
+            <input
+              type="checkbox"
+              checked={isFault}
+              onChange={(e) => setIsFault(e.target.checked)}
+              className="sr-only peer"
+              id="fault-toggle"
+            />
+            <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 text-xl font-bold">
+        Score du service : {finalScore}
+      </div>
+    </main>
   );
 }
